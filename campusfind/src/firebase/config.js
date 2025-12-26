@@ -7,12 +7,13 @@ import { getStorage } from "firebase/storage";
 // For now, we use placeholders.
 // The user will need to add their own keys or we'll add them if provided.
 const firebaseConfig = {
-  apiKey: "API_KEY",
-  authDomain: "PROJECT_ID.firebaseapp.com",
-  projectId: "PROJECT_ID",
-  storageBucket: "PROJECT_ID.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
+  apiKey: "AIzaSyChBZBZLFeyPNrcCdlH-EOAfuyFE5HcBVI",
+  authDomain: "lostfound-2e686.firebaseapp.com",
+  projectId: "lostfound-2e686",
+  storageBucket: "lostfound-2e686.firebasestorage.app",
+  messagingSenderId: "388290666720",
+  appId: "1:388290666720:web:ac9e4581d3cdca05deb085",
+  measurementId: "G-X1GMNSTR8J"
 };
 
 // Initialize Firebase
