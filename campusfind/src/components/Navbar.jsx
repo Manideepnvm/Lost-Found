@@ -1,17 +1,55 @@
-import { Link } from 'react-router-dom';
-import '../styles/main.css';
+
+import { Link, useLocation } from 'react-router-dom';
+import { Compass, Search, PlusCircle, Home as HomeIcon, MapPin } from 'lucide-react';
+import { useLocationContext } from '../context/LocationContext';
 
 const Navbar = () => {
+  const location = useLocation();
+  const { city, updateCity } = useLocationContext();
+
+  const isActive = (path) => location.pathname === path ? 'active' : '';
+
+  const handleChangeCity = () => {
+    if(confirm("Do you want to change your city?")) {
+      updateCity(''); // Resetting triggers modal
+    }
+  };
+
   return (
-    <nav className="navbar" style={{ background: 'var(--primary-color)', padding: '15px 0' }}>
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Link to="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.5rem', fontWeight: 'bold' }}>
-          🏫 CampusFind
+    <nav className="navbar">
+      <div className="container navbar-content">
+        <Link to="/" className="logo">
+          <Compass size={28} className="logo-icon" />
+          <span>CampusFind</span>
         </Link>
-        <div className="nav-links">
-          <Link to="/" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>Home</Link>
-          <Link to="/items" style={{ color: 'white', textDecoration: 'none' }}>View Items</Link>
-        </div>
+        
+        <ul className="nav-links">
+          {city && (
+            <li onClick={handleChangeCity} className="location-pill">
+              <MapPin size={16} /> {city}
+            </li>
+          )}
+          <li>
+            <Link to="/" className={`nav-link ${isActive('/')}`}>
+              <HomeIcon size={18} /> Home
+            </Link>
+          </li>
+          <li>
+            <Link to="/items" className={`nav-link ${isActive('/items')}`}>
+              <Search size={18} /> Browse Items
+            </Link>
+          </li>
+          <li>
+            <Link to="/post-lost" className={`nav-link ${isActive('/post-lost')}`}>
+              <PlusCircle size={18} /> Post Lost
+            </Link>
+          </li>
+          <li>
+            <Link to="/post-found" className={`nav-link ${isActive('/post-found')}`}>
+              <PlusCircle size={18} /> Post Found
+            </Link>
+          </li>
+        </ul>
       </div>
     </nav>
   );

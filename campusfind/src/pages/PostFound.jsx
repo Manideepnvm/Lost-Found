@@ -1,12 +1,25 @@
 
+import { 
+  Building2, 
+  MapPin, 
+  Phone, 
+  User, 
+  Tag, 
+  Image as ImageIcon,
+  CheckCircle2,
+  Loader2
+} from 'lucide-react';
 import { useState } from 'react';
 import { db, storage } from '../firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
+import { useLocationContext } from '../context/LocationContext';
 
 const PostFound = () => {
   const navigate = useNavigate();
+  const { city } = useLocationContext();
+
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -35,25 +48,22 @@ const PostFound = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!formData.personName || !formData.contact || !formData.itemName || !formData.location || !image) {
       alert("All fields including image are mandatory!");
       return;
     }
 
     setLoading(true);
-
     try {
-      // 1. Upload Image
       const storageRef = ref(storage, `item-images/${Date.now()}_${image.name}`);
       const snapshot = await uploadBytes(storageRef, image);
       const downloadURL = await getDownloadURL(snapshot.ref);
 
-      // 2. Add to Firestore
       await addDoc(collection(db, "items"), {
         ...formData,
         imageUrl: downloadURL,
         type: 'found',
+        city: city, // Save city
         createdAt: serverTimestamp()
       });
 
@@ -69,94 +79,100 @@ const PostFound = () => {
 
   return (
     <div className="container mt-4 animate-fade-in">
-      <div className="card form-card">
-        <h2 className="text-center" style={{ color: 'var(--success)' }}>Report Found Item</h2>
-        <p className="text-center mb-4 text-muted">Thank you for helping returning lost items!</p>
+      <div className="card form-card found-theme">
+        <div className="form-header">
+          <h2 className="text-center section-title">Report Found Item</h2>
+          <p className="text-center text-muted">Posting in <strong>{city}</strong></p>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Your Name *</label>
+        <form onSubmit={handleSubmit} className="premium-form">
+          <div className="form-group icon-input">
+            <User className="input-icon" size={20} />
             <input 
               type="text" 
               name="personName" 
               value={formData.personName} 
               onChange={handleChange} 
-              placeholder="Enter your name"
+              placeholder="Your Full Name *"
               required 
             />
           </div>
 
-          <div className="form-group">
-            <label>Contact Number / Email *</label>
+          <div className="form-group icon-input">
+            <Phone className="input-icon" size={20} />
             <input 
               type="text" 
               name="contact" 
               value={formData.contact} 
               onChange={handleChange} 
-              placeholder="How can the owner reach you?"
+              placeholder="Contact Number / Email *"
               required 
             />
           </div>
 
           <div className="form-row">
-            <div className="form-group half">
-              <label>Item Name *</label>
+            <div className="form-group half icon-input">
+              <Tag className="input-icon" size={20} />
               <input 
                 type="text" 
                 name="itemName" 
                 value={formData.itemName} 
                 onChange={handleChange} 
-                placeholder="e.g., Black Wallet"
+                placeholder="Item Name *"
                 required 
               />
             </div>
             
             <div className="form-group half">
-              <label>Category *</label>
-              <select name="category" value={formData.category} onChange={handleChange}>
+              <select name="category" value={formData.category} onChange={handleChange} className="custom-select">
                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Location Found *</label>
+          <div className="form-group icon-input">
+            <MapPin className="input-icon" size={20} />
             <input 
               type="text" 
               name="location" 
               value={formData.location} 
               onChange={handleChange} 
-              placeholder="e.g., Cafeteria Table 5"
+              placeholder={`Location inside ${city} (e.g., Cafeteria) *`}
               required 
             />
           </div>
 
           <div className="form-group">
-            <label>Description</label>
             <textarea 
               name="description" 
               value={formData.description} 
               onChange={handleChange} 
-              placeholder="Any details? (Keep safety in mind)"
+              placeholder="Description (Safety first!)..."
               rows="3"
             ></textarea>
           </div>
 
-          <div className="form-group">
-            <label>Item Image (Mandatory) *</label>
-            <div className="file-upload-wrapper">
+          <div className="form-group upload-group">
+            <label className="upload-label">
+              <ImageIcon size={24} />
+              <span>{image ? "Change Image" : "Upload Found Item Image *"}</span>
               <input 
                 type="file" 
                 accept="image/*" 
                 onChange={handleImageChange}
                 required
+                hidden
               />
-              {preview && <img src={preview} alt="Preview" className="image-preview" />}
-            </div>
+            </label>
+            {preview && (
+              <div className="preview-container">
+                <img src={preview} alt="Preview" className="image-preview" />
+              </div>
+            )}
           </div>
 
-          <button type="submit" className="btn btn-primary full-width" disabled={loading}>
-            {loading ? 'Posting...' : 'Post Found Item'}
+          <button type="submit" className="btn btn-primary full-width submit-btn success-btn" disabled={loading}>
+            {loading ? <><Loader2 className="spin" size={20} /> Posting...</> : <><CheckCircle2 size={20} /> Post Found Item</>}
           </button>
         </form>
       </div>

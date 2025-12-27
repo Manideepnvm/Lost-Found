@@ -3,22 +3,25 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import PostLost from './pages/PostLost';
 import PostFound from './pages/PostFound';
+import Items from './pages/Items';
+import LocationModal from './components/LocationModal';
+import { LocationProvider } from './context/LocationContext';
 import './styles/main.css';
-
-// Placeholder components for routes we haven't built yet
-const Items = () => <div className="container mt-4"><h2>View Items (Coming Soon)</h2></div>;
 
 function App() {
   return (
-    <div className="app">
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/post-lost" element={<PostLost />} />
-        <Route path="/post-found" element={<PostFound />} />
-        <Route path="/items" element={<Items />} />
-      </Routes>
-    </div>
+    <LocationProvider>
+      <div className="app">
+        <Navbar />
+        <LocationModal />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/post-lost" element={<PostLost />} />
+          <Route path="/post-found" element={<PostFound />} />
+          <Route path="/items" element={<Items />} />
+        </Routes>
+      </div>
+    </LocationProvider>
   );
 }
 

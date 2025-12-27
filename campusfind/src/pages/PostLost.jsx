@@ -1,12 +1,26 @@
 
+import { 
+  Building2, 
+  MapPin, 
+  Phone, 
+  User, 
+  Tag, 
+  Image as ImageIcon,
+  Send,
+  Loader2,
+  Navigation
+} from 'lucide-react';
 import { useState } from 'react';
 import { db, storage } from '../firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
+import { useLocationContext } from '../context/LocationContext';
 
 const PostLost = () => {
   const navigate = useNavigate();
+  const { city } = useLocationContext();
+  
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -35,25 +49,22 @@ const PostLost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!formData.personName || !formData.contact || !formData.itemName || !formData.location || !image) {
       alert("All fields including image are mandatory!");
       return;
     }
 
     setLoading(true);
-
     try {
-      // 1. Upload Image
       const storageRef = ref(storage, `item-images/${Date.now()}_${image.name}`);
       const snapshot = await uploadBytes(storageRef, image);
       const downloadURL = await getDownloadURL(snapshot.ref);
 
-      // 2. Add to Firestore
       await addDoc(collection(db, "items"), {
         ...formData,
         imageUrl: downloadURL,
         type: 'lost',
+        city: city, // Save the city
         createdAt: serverTimestamp()
       });
 
@@ -69,94 +80,100 @@ const PostLost = () => {
 
   return (
     <div className="container mt-4 animate-fade-in">
-      <div className="card form-card">
-        <h2 className="text-center" style={{ color: 'var(--danger)' }}>Report Lost Item</h2>
-        <p className="text-center mb-4 text-muted">Please provide details to help find your item.</p>
+      <div className="card form-card lost-theme">
+        <div className="form-header">
+          <h2 className="text-center section-title">Report Lost Item</h2>
+          <p className="text-center text-muted">Posting in <strong>{city}</strong></p>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Full Name *</label>
+        <form onSubmit={handleSubmit} className="premium-form">
+          <div className="form-group icon-input">
+            <User className="input-icon" size={20} />
             <input 
               type="text" 
               name="personName" 
               value={formData.personName} 
               onChange={handleChange} 
-              placeholder="Enter your name"
+              placeholder="Your Full Name *"
               required 
             />
           </div>
 
-          <div className="form-group">
-            <label>Contact Number / Email *</label>
+          <div className="form-group icon-input">
+            <Phone className="input-icon" size={20} />
             <input 
               type="text" 
               name="contact" 
               value={formData.contact} 
               onChange={handleChange} 
-              placeholder="How can someone reach you?"
+              placeholder="Contact Number / Email *"
               required 
             />
           </div>
 
           <div className="form-row">
-            <div className="form-group half">
-              <label>Item Name *</label>
+            <div className="form-group half icon-input">
+              <Tag className="input-icon" size={20} />
               <input 
                 type="text" 
                 name="itemName" 
                 value={formData.itemName} 
                 onChange={handleChange} 
-                placeholder="e.g., iPhone 13, Blue Bag"
+                placeholder="Item Name *"
                 required 
               />
             </div>
             
             <div className="form-group half">
-              <label>Category *</label>
-              <select name="category" value={formData.category} onChange={handleChange}>
+              <select name="category" value={formData.category} onChange={handleChange} className="custom-select">
                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Location Lost *</label>
+          <div className="form-group icon-input">
+            <MapPin className="input-icon" size={20} />
             <input 
               type="text" 
               name="location" 
               value={formData.location} 
               onChange={handleChange} 
-              placeholder="e.g., Library 2nd Floor"
+              placeholder={`Location inside ${city} (e.g., Central Park) *`}
               required 
             />
           </div>
 
           <div className="form-group">
-            <label>Description</label>
             <textarea 
               name="description" 
               value={formData.description} 
               onChange={handleChange} 
-              placeholder="Any specific details associated with the item..."
+              placeholder="Description (Color, model, unique marks)..."
               rows="3"
             ></textarea>
           </div>
 
-          <div className="form-group">
-            <label>Item Image (Mandatory) *</label>
-            <div className="file-upload-wrapper">
+          <div className="form-group upload-group">
+            <label className="upload-label">
+              <ImageIcon size={24} />
+              <span>{image ? "Change Image" : "Upload Item Image *"}</span>
               <input 
                 type="file" 
                 accept="image/*" 
                 onChange={handleImageChange}
                 required
+                hidden
               />
-              {preview && <img src={preview} alt="Preview" className="image-preview" />}
-            </div>
+            </label>
+            {preview && (
+              <div className="preview-container">
+                <img src={preview} alt="Preview" className="image-preview" />
+              </div>
+            )}
           </div>
 
-          <button type="submit" className="btn btn-primary full-width" disabled={loading}>
-            {loading ? 'Posting...' : 'Post Lost Item'}
+          <button type="submit" className="btn btn-primary full-width submit-btn" disabled={loading}>
+            {loading ? <><Loader2 className="spin" size={20} /> Posting...</> : <><Send size={20} /> Post Lost Item</>}
           </button>
         </form>
       </div>
