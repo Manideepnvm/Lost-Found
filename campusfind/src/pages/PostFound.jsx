@@ -9,16 +9,18 @@ import {
   CheckCircle2,
   Loader2
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { db, storage } from '../firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import { useLocationContext } from '../context/LocationContext';
+import { useUser } from '../context/UserContext';
 
 const PostFound = () => {
   const navigate = useNavigate();
   const { city } = useLocationContext();
+  const { user } = useUser();
 
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
@@ -31,6 +33,17 @@ const PostFound = () => {
     description: '',
     location: '',
   });
+
+  // Auto-fill user details
+  useEffect(() => {
+    if (user && (user.name || user.contact)) {
+      setFormData(prev => ({
+        ...prev,
+        personName: user.name || '',
+        contact: user.contact || ''
+      }));
+    }
+  }, [user]);
 
   const categories = ['Electronics', 'Clothing', 'Documents', 'Keys', 'Wallet', 'Other'];
 
@@ -79,7 +92,7 @@ const PostFound = () => {
 
   return (
     <div className="container mt-4 animate-fade-in">
-      <div className="card form-card found-theme">
+      <div className="form-card">
         <div className="form-header">
           <h2 className="text-center section-title">Report Found Item</h2>
           <p className="text-center text-muted">Posting in <strong>{city}</strong></p>
@@ -95,6 +108,7 @@ const PostFound = () => {
               onChange={handleChange} 
               placeholder="Your Full Name *"
               required 
+              readOnly={!!user?.name}
             />
           </div>
 
@@ -107,8 +121,17 @@ const PostFound = () => {
               onChange={handleChange} 
               placeholder="Contact Number / Email *"
               required 
+              readOnly={!!user?.contact}
             />
           </div>
+          
+          {(!user?.name || !user?.contact) && (
+            <div className="text-center mb-3">
+              <small className="text-muted">
+                Tip: Go to <a href="/settings" style={{color:'var(--primary-color)'}}>Settings</a> to save these details permanently.
+              </small>
+            </div>
+          )}
 
           <div className="form-row">
             <div className="form-group half icon-input">

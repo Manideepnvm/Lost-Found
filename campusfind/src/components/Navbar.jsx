@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from 'react-router-dom';
-import { Compass, Search, PlusCircle, Home as HomeIcon, MapPin } from 'lucide-react';
+import { Compass, Search, PlusCircle, Home as HomeIcon, MapPin, Settings } from 'lucide-react';
 import { useLocationContext } from '../context/LocationContext';
 
 const Navbar = () => {
@@ -11,7 +11,7 @@ const Navbar = () => {
 
   const handleChangeCity = () => {
     if(confirm("Do you want to change your city?")) {
-      updateCity(''); // Resetting triggers modal
+      updateCity('');
     }
   };
 
@@ -47,6 +47,11 @@ const Navbar = () => {
           <li>
             <Link to="/post-found" className={`nav-link ${isActive('/post-found')}`}>
               <PlusCircle size={18} /> Post Found
+            </Link>
+          </li>
+          <li>
+            <Link to="/settings" className={`nav-link ${isActive('/settings')}`}>
+              <Settings size={18} /> Settings
             </Link>
           </li>
         </ul>

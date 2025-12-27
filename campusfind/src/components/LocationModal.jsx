@@ -105,7 +105,7 @@ const LocationModal = () => {
         <div className="divider"><span>OR</span></div>
         
         <form onSubmit={handleSubmit} className="city-form">
-          <div className="input-wrapper">
+          <div className="form-group icon-input">
             <MapPin size={20} className="input-icon" />
             <input 
               type="text" 
