@@ -79,6 +79,7 @@ h3 {
   margin-bottom: 1.5rem;
   background: linear-gradient(to right, #fff, #94a3b8);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -373,12 +374,14 @@ input:read-only {
   margin-bottom: 1.5rem;
   background: linear-gradient(to bottom right, #fff, #94a3b8);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .highlight {
   background: linear-gradient(120deg, var(--primary-color), #a5b4fc);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
