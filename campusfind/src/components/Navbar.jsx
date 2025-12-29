@@ -1,6 +1,5 @@
-
 import { Link, useLocation } from 'react-router-dom';
-import { Compass, Search, PlusCircle, Home as HomeIcon, MapPin, Settings } from 'lucide-react';
+import { Compass, Search, PlusCircle, Home as HomeIcon, MapPin, Settings, User } from 'lucide-react';
 import { useLocationContext } from '../context/LocationContext';
 
 const Navbar = () => {
@@ -47,6 +46,11 @@ const Navbar = () => {
           <li>
             <Link to="/post-found" className={`nav-link ${isActive('/post-found')}`}>
               <PlusCircle size={18} /> Post Found
+            </Link>
+          </li>
+          <li>
+            <Link to="/my-items" className={`nav-link ${isActive('/my-items')}`}>
+              <User size={18} /> My Items
             </Link>
           </li>
           <li>

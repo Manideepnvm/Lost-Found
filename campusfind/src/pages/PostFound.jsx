@@ -16,6 +16,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import { useLocationContext } from '../context/LocationContext';
 import { useUser } from '../context/UserContext';
+import { LocationPicker } from '../components/MapComponents';
 
 const PostFound = () => {
   const navigate = useNavigate();
@@ -25,9 +26,11 @@ const PostFound = () => {
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [position, setPosition] = useState(null);
   const [formData, setFormData] = useState({
     personName: '',
     contact: '',
+    email: '',
     itemName: '',
     category: 'Electronics',
     description: '',
@@ -77,6 +80,8 @@ const PostFound = () => {
         imageUrl: downloadURL,
         type: 'found',
         city: city, // Save city
+        ownerEmail: user.email,
+        coordinates: position,
         createdAt: serverTimestamp()
       });
 
@@ -163,6 +168,13 @@ const PostFound = () => {
               placeholder={`Location inside ${city} (e.g., Cafeteria) *`}
               required 
             />
+          </div>
+
+          <div className="form-group">
+             <label style={{display: 'block', marginBottom: '8px', color: 'var(--text-secondary)'}}>
+               <MapPin size={16} /> Pin Exact Location on Map (Optional)
+             </label>
+             <LocationPicker position={position} setPosition={setPosition} />
           </div>
 
           <div className="form-group">
