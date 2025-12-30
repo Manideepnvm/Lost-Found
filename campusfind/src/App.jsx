@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import PostLost from './pages/PostLost';
 import PostFound from './pages/PostFound';
 import Items from './pages/Items';
-import Posts from './pages/Items';
+
 import MyListings from './pages/MyListings';
 import Settings from './pages/Settings'; 
 import EditItem from './pages/EditItem';
